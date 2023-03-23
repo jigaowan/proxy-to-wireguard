@@ -1,0 +1,34 @@
+version: "2.1"
+services:
+  wireguard:
+    image: lscr.io/linuxserver/wireguard:latest
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - snellport:7800
+      - 5180:51820/udp
+    volumes:
+      - /root/ptwg/config:/config
+      - /lib/modules:/lib/modules
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv6.conf.all.disable_ipv6=0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://www.cloudflare.com/cdn-cgi/trace/"]
+      interval: 2s
+      timeout: 1s
+      start_period: 1s
+    restart: always
+  snell:
+    image: ghcr.io/jigaowan/docker-snell:main
+    environment:
+      - PSK=
+    network_mode: service:wireguard
+    depends_on:
+      wireguard:
+        condition: service_healthy
+    restart: always
