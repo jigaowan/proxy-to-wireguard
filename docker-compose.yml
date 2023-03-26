@@ -9,8 +9,8 @@ services:
       - PUID=1000
       - PGID=1000
     ports:
-      - snellport:7800
-      - 5180:51820/udp
+      - <snellport>:7800
+      - 51800:51820/udp
     volumes:
       - /root/ptwg/config:/config
       - /lib/modules:/lib/modules
@@ -26,7 +26,7 @@ services:
   snell:
     image: ghcr.io/jigaowan/docker-snell:main
     environment:
-      - PSK=
+      - PSK=<password>
     network_mode: service:wireguard
     depends_on:
       wireguard:
